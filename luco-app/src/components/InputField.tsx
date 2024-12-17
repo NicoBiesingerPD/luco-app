@@ -24,7 +24,7 @@ const InputField = () => {
     let [inputValue, setInputValue] = useState("");
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === " "||event.key === "Enter") {  // Überprüft, ob das Leerzeichen gedrückt wurde
+        if (event.key === " " || event.key === "Enter") {  // Überprüft, ob das Leerzeichen gedrückt wurde
             let anzuzeigenderText = ""
             b++
             if (b%multiplikator == 0){
@@ -37,7 +37,7 @@ const InputField = () => {
                 inputValue = " " + inputValue
             }
 
-            if (inputValue == (" " + newList[b - 1])) {
+            if (inputValue || inputValue == (" " + newList[b - 1] || newList[b - 1])) {
                 if (b%multiplikator == 0){
                     setValidatedContent("")
                 }
