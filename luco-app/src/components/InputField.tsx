@@ -19,6 +19,7 @@ const InputField = () => {
         y: number;
         opacity: number;
         color: string
+
     }[]>([]);
     const nextId = useRef(0);
     const [, setCurrentWord] = useState<string | null>(null);
@@ -89,6 +90,22 @@ const InputField = () => {
             } else {
                 setValidatedContent((prev) => prev + ` <span class="red-text">${trimmedInput}</span>`);
                 setMistakeCounter((prev) => prev + 1);
+                setFlyingWords((prevWords) =>
+                    prevWords.map((word) =>
+                        word.word === currentWord
+                            ? {...word, color: "red", opacity: 1}
+                            : word
+                    )
+                );
+                setTimeout(() => {
+                    setFlyingWords((prevWords) =>
+                        prevWords.map((word) =>
+                            word.word === currentWord
+                                ? {...word, opacity: 0}
+                                : word
+                        )
+                    );
+                });
             }
 
             setInputValue("");
