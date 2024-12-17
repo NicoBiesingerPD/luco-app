@@ -1,141 +1,139 @@
-import "./InputField.scss"
-import React, {useState} from "react";
+import React, {useState, useRef, useEffect} from "react";
+import "./InputField.scss";
+import {newList} from "../assets/wordlist.tsx";
 
-export const inputRef = React.createRef<HTMLInputElement>();
-let b = 0
-let i = 0
-let j = 0
-let multiplikator = 5
-const newList = [
-    "der", "die", "das", "und", "sein", "in", "zu", "haben", "ich", "werden",
-    "sie", "von", "nicht", "mit", "es", "sich", "auch", "auf", "für", "an",
-    "er", "so", "dass", "können", "dies", "als", "ihr", "ja", "nein", "müssen",
-    "man", "aber", "alle", "oder", "wenn", "nur", "wir", "was", "mein", "bei",
-    "um", "ja", "machen", "mehr", "gehen", "kommen", "jetzt", "gut", "vor",
-    "sein", "noch", "zeit", "nach", "eben", "ihm", "nein", "durch", "mich",
-    "mal", "weil", "wissen", "ja", "deren", "dieser", "auch", "immer", "sehen",
-    "lassen", "bitte", "spielen", "will", "wollen", "klingen", "sprechen",
-    "schreiben", "lesen", "nehmen", "geben", "stehen", "finden", "bleiben",
-    "heute", "möchte", "wohl", "denken", "liegen", "leisten", "tragen",
-    "sagen", "arbeiten", "fahren", "denken", "fordern", "finden",
-    "dienen", "halten"
-];
-
-
-/*var textToMove =  document.getElementById("spanTest");
-// @ts-ignore
-textToMove.style.position = "absolute";
-var pos_x = 0;
-var pos_y = 0;
-
-// Funktion, die das Text-Element bewegt
-function moveText() {
-    // @ts-ignore
-    textToMove.style.left = pos_x + "px";
-    // @ts-ignore
-    textToMove.style.top = pos_y + "px";
-
-    pos_x += 1; // pos_x um 1 erhöhen
-    pos_y += 1; // pos_y um 1 erhöhen
-}
-
-// setInterval ruft moveText alle 100 ms auf
-setInterval(moveText, 100);*/
+let b = 1
+let geschwindigkeit = 50
+let delta = 1000
 
 
 const InputField = () => {
-    let [inputValue, setInputValue] = useState("");
+    const [inputValue, setInputValue] = useState("");
+    const [mistakeCounter, setMistakeCounter] = useState(0);
+    const [validatedContent, setValidatedContent] = useState("");
+    const [currentWordIndex, setCurrentWordIndex] = useState(0);
+    const [flyingWords, setFlyingWords] = useState<{
+        id: number;
+        word: string;
+        x: number;
+        y: number;
+        opacity: number;
+        color: string
+    }[]>([]);
+    const nextId = useRef(0);
+    const [, setCurrentWord] = useState<string | null>(null);
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const nextWord = newList[currentWordIndex % newList.length];
+            setCurrentWord(nextWord);
+            setCurrentWordIndex((prev) => prev + 1);
+            addFlyingWord(nextWord);
+        }, delta);
+
+        return () => clearInterval(interval);
+    }, [currentWordIndex]);
+    delta = delta / 100 * 99.95
+    geschwindigkeit = geschwindigkeit / 100 * 101
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFlyingWords((words) =>
+                words
+                    .map((word) => {
+                        if (word.y >= 450) {
+                            return null;
+                        }
+                        return {...word, y: word.y + 5};
+                    })
+                    .filter((word) => word !== null) as typeof flyingWords
+            );
+        }, geschwindigkeit);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const addFlyingWord = (word: string) => {
+        const positionX = Math.random() * (1350 - 300) + 300;
+        setFlyingWords((prev) => [
+            ...prev,
+            {id: nextId.current++, word, x: positionX, y: 0, opacity: 1, color: "black"}
+        ]);
+    };
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === " " || event.key === "Enter") {  // Überprüft, ob das Leerzeichen gedrückt wurde
-            let anzuzeigenderText = ""
+        if (event.key === " " || event.key === "Enter") {
+            const trimmedInput = inputValue.trim();
+            const currentWord = newList[(b - 1) % newList.length];
             b++
-            if (b % multiplikator == 0) {
-                j = j + multiplikator
-            }
-            for (let i = j; i < j + multiplikator; i++) {
-                anzuzeigenderText = anzuzeigenderText + (newList[i] + " ")
-            }
-            if (b - 1 == 0) {
-                inputValue = " " + inputValue
-            }
-
-            if (inputValue == newList[b - 1]|| inputValue == (" " + newList[b - 1])) {
-                if (b % multiplikator == 0) {
-                    setValidatedContent("")
-                } else {
-                    setValidatedContent(validatedContent + ` <span class="green-text">${inputValue}</span>`)
-
-                }
-
+            if (trimmedInput === currentWord) {
+                setValidatedContent((prev) => prev + ` <strong><span class="green-text">${trimmedInput}</span></strong>`);
+                setFlyingWords((prevWords) =>
+                    prevWords.map((word) =>
+                        word.word === currentWord
+                            ? {...word, color: "green", opacity: 1}
+                            : word
+                    )
+                );
+                setTimeout(() => {
+                    setFlyingWords((prevWords) =>
+                        prevWords.map((word) =>
+                            word.word === currentWord
+                                ? {...word, opacity: 0}
+                                : word
+                        )
+                    );
+                });
             } else {
-                if (b % multiplikator == 0) {
-                    setValidatedContent("")
-                } else {
-                    setValidatedContent(validatedContent + ` <span class="red-text">${inputValue}</span>`);
-                    setMistakeCounter(mistakeCounter + 1)
-                }
+                setValidatedContent((prev) => prev + ` <span class="red-text">${trimmedInput}</span>`);
+                setMistakeCounter((prev) => prev + 1);
             }
 
-            setTextContent(anzuzeigenderText)
-            i++
-            console.log(inputValue)
-
-            console.log(textContent)
-
-            setInputValue("")
-            return (textContent)
-
+            setInputValue("");
         }
     };
-    const firstFiveWords = () => {
-        let displayedText = ""
-        for (let i = 0; i < multiplikator; i++) {
-            displayedText = displayedText + (newList[i] + " ")
-
-        }
-        return displayedText
-    }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value); // Aktualisiert den Input-Wert
+        setInputValue(event.target.value);
     };
 
-    let [textContent, setTextContent] = useState(firstFiveWords)
-    let [validatedContent, setValidatedContent] = useState("")
-    let [mistakeCounter, setMistakeCounter] = useState(0)
     return (
         <>
             <div>
-                <span id="spanTest">Hallo</span>
+                {flyingWords.map((word) => (
+                    <span
+                        key={word.id}
+                        className="flying-word"
+                        style={{
+                            position: "absolute",
+                            left: `${word.x}px`,
+                            top: `${word.y}px`,
+                            color: word.color,
+                            opacity: word.opacity,
+                            transition: "top 0.1s linear, opacity 1s ease-out",
+                        }}
+                    >
+                        {word.word}
+                    </span>
+                ))}
             </div>
-            <p>
-                Counter: {mistakeCounter}
-            </p>
-            <p dangerouslySetInnerHTML={{__html: validatedContent}}>
-            </p>
-            <p dangerouslySetInnerHTML={{__html: textContent}}>
-            </p>
-            <p>
-            <span className="input">
+
+            <p>Counter: {mistakeCounter}</p>
+            <p dangerouslySetInnerHTML={{__html: validatedContent}}></p>
+            <div className="input">
                 <input
                     id="inputID"
                     type="text"
                     placeholder="Gib etwas ein"
                     value={inputValue}
-                    onChange={handleChange} // Wert im State aktualisieren
-                    onKeyPress={handleKeyPress} // Überwacht das Drücken der Tasten
+                    onChange={handleChange}
+                    onKeyPress={handleKeyPress}
                 />
-                <span></span>
-            </span>
-            </p>
+            </div>
         </>
     );
 };
 
 export default InputField;
-
-
-export function clone() {
-    return inputRef.current ? inputRef.current.value : "";
-}

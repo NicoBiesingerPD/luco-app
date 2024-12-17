@@ -1,6 +1,5 @@
 import "./Button.scss"
 import "./Button.scss";
-import {clone} from "./InputField";
 
 const Button = () => {
     return (
@@ -8,7 +7,6 @@ const Button = () => {
             <main>
                 <button
                     onClick={() =>{
-                        console.log(clone());
 
                     }}>
                     <div>
