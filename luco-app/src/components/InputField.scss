@@ -1,8 +1,12 @@
+.cluster{
+  position: relative;
+  top: 200px;
+}
+
 .input {
 
   // needs to be relative so the :focus span is positioned correctly
   position:relative;
-
   // bigger font size for demo purposes
   font-size: 1.5em;
 

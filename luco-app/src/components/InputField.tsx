@@ -43,7 +43,7 @@ const InputField = () => {
             setFlyingWords((words) =>
                 words
                     .map((word) => {
-                        if (word.y >= 450) {
+                        if (word.y >= 600) {
                             return null;
                         }
                         return {...word, y: word.y + 5};
@@ -100,13 +100,27 @@ const InputField = () => {
     };
 
     return (
-        <>
+        <> <div className="cluster">
+            <p>Counter: {mistakeCounter}</p>
+            <div className="input">
+                <input
+                    id="inputID"
+                    type="text"
+                    placeholder="Gib etwas ein"
+                    value={inputValue}
+                    onChange={handleChange}
+                    onKeyPress={handleKeyPress}
+                />
+            </div>
+            <p dangerouslySetInnerHTML={{__html: validatedContent}}></p>
+        </div>
             <div>
                 {flyingWords.map((word) => (
                     <span
                         key={word.id}
                         className="flying-word"
                         style={{
+                            fontSize: "30px",
                             position: "absolute",
                             left: `${word.x}px`,
                             top: `${word.y}px`,
@@ -120,18 +134,7 @@ const InputField = () => {
                 ))}
             </div>
 
-            <p>Counter: {mistakeCounter}</p>
-            <p dangerouslySetInnerHTML={{__html: validatedContent}}></p>
-            <div className="input">
-                <input
-                    id="inputID"
-                    type="text"
-                    placeholder="Gib etwas ein"
-                    value={inputValue}
-                    onChange={handleChange}
-                    onKeyPress={handleKeyPress}
-                />
-            </div>
+
         </>
     );
 };
