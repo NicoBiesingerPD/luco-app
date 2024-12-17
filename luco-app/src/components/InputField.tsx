@@ -20,6 +20,29 @@ const newList = [
     "sagen", "arbeiten", "fahren", "denken", "fordern", "finden",
     "dienen", "halten"
 ];
+
+
+/*var textToMove =  document.getElementById("spanTest");
+// @ts-ignore
+textToMove.style.position = "absolute";
+var pos_x = 0;
+var pos_y = 0;
+
+// Funktion, die das Text-Element bewegt
+function moveText() {
+    // @ts-ignore
+    textToMove.style.left = pos_x + "px";
+    // @ts-ignore
+    textToMove.style.top = pos_y + "px";
+
+    pos_x += 1; // pos_x um 1 erhöhen
+    pos_y += 1; // pos_y um 1 erhöhen
+}
+
+// setInterval ruft moveText alle 100 ms auf
+setInterval(moveText, 100);*/
+
+
 const InputField = () => {
     let [inputValue, setInputValue] = useState("");
 
@@ -27,32 +50,30 @@ const InputField = () => {
         if (event.key === " " || event.key === "Enter") {  // Überprüft, ob das Leerzeichen gedrückt wurde
             let anzuzeigenderText = ""
             b++
-            if (b%multiplikator == 0){
-                j= j+multiplikator
+            if (b % multiplikator == 0) {
+                j = j + multiplikator
             }
-            for (let i = j; i<j+multiplikator; i++){
-                anzuzeigenderText= anzuzeigenderText+(newList[i]+" ")
+            for (let i = j; i < j + multiplikator; i++) {
+                anzuzeigenderText = anzuzeigenderText + (newList[i] + " ")
             }
-            if (b-1 == 0) {
+            if (b - 1 == 0) {
                 inputValue = " " + inputValue
             }
 
-            if (inputValue || inputValue == (" " + newList[b - 1] || newList[b - 1])) {
-                if (b%multiplikator == 0){
+            if (inputValue == newList[b - 1]|| inputValue == (" " + newList[b - 1])) {
+                if (b % multiplikator == 0) {
                     setValidatedContent("")
-                }
-                else{
-                    setValidatedContent(validatedContent +  ` <span class="green-text">${inputValue}</span>`)
+                } else {
+                    setValidatedContent(validatedContent + ` <span class="green-text">${inputValue}</span>`)
 
                 }
 
             } else {
-                if (b%multiplikator == 0){
+                if (b % multiplikator == 0) {
                     setValidatedContent("")
-                }
-                else {
+                } else {
                     setValidatedContent(validatedContent + ` <span class="red-text">${inputValue}</span>`);
-                    setMistakeCounter(mistakeCounter+1)
+                    setMistakeCounter(mistakeCounter + 1)
                 }
             }
 
@@ -60,17 +81,17 @@ const InputField = () => {
             i++
             console.log(inputValue)
 
-                console.log(textContent)
+            console.log(textContent)
 
             setInputValue("")
             return (textContent)
 
         }
     };
-    const firstFiveWords = () =>{
+    const firstFiveWords = () => {
         let displayedText = ""
-        for (let i = 0; i<multiplikator; i++){
-            displayedText= displayedText+(newList[i]+" ")
+        for (let i = 0; i < multiplikator; i++) {
+            displayedText = displayedText + (newList[i] + " ")
 
         }
         return displayedText
@@ -85,10 +106,13 @@ const InputField = () => {
     let [mistakeCounter, setMistakeCounter] = useState(0)
     return (
         <>
+            <div>
+                <span id="spanTest">Hallo</span>
+            </div>
             <p>
                 Counter: {mistakeCounter}
             </p>
-            <p dangerouslySetInnerHTML={{ __html: validatedContent }}>
+            <p dangerouslySetInnerHTML={{__html: validatedContent}}>
             </p>
             <p dangerouslySetInnerHTML={{__html: textContent}}>
             </p>
